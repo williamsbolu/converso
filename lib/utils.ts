@@ -51,7 +51,7 @@ export const configureAssistant = (voice: string, style: string) => {
                     Keep your style of conversation {{ style }}.
                     Keep your responses short, like in a real voice conversation.
                     Do not include any special characters in your responses - this is a voice conversation.
-                    if there is no response from the user in 30 seconnds, politely ask if they are still there, if no immediate response, end the call sharply.
+                    if there is no response from the student in 30 seconnds, politely ask if they are still there, if no immediate response, end the call sharply.
               `,
         },
       ],
