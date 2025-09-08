@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,7 +25,6 @@ import {
 import { subjects } from "@/constants";
 import { Textarea } from "./ui/textarea";
 import { createCompanion } from "@/lib/actions/companion.action";
-import { redirect } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Companion is required." }),
@@ -36,6 +37,8 @@ const formSchema = z.object({
 });
 
 const CompanionForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,7 +52,9 @@ const CompanionForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     const companion = await createCompanion(values);
+    setIsLoading(false);
 
     if (companion) {
       redirect(`/companions/${companion.id}`);
@@ -202,7 +207,11 @@ const CompanionForm = () => {
           )}
         />
 
-        <Button type="submit" className="w-full cursor-pointer">
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={isLoading}
+        >
           Build Your Companion
         </Button>
       </form>

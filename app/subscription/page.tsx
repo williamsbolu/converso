@@ -3,9 +3,10 @@ import React from "react";
 
 const Subscription = () => {
   return (
-    <div>
+    <main>
+      <h1 className="text-center">Plan & Pricing</h1>
       <PricingTable />
-    </div>
+    </main>
   );
 };
 

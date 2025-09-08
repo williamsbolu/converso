@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "../supabase";
+import { revalidatePath } from "next/cache";
 
 export const createCompanion = async (formData: CreateCompanion) => {
   const { userId: author } = await auth();
@@ -27,6 +28,8 @@ export const getAllCompanions = async ({
 }: GetAllCompanions) => {
   const supabase = createSupabaseClient(); // get the database
 
+  const { userId } = await auth();
+
   let query = supabase.from("companions").select();
 
   if (subject && topic) {
@@ -46,6 +49,24 @@ export const getAllCompanions = async ({
 
   if (error) throw new Error(error.message);
 
+  // Get an array of companion IDs
+  const companionIds = companions.map(({ id }) => id);
+
+  // Get the bookmarks where user_id is the current user and companion_id is in the array of companion IDs
+  const { data: bookmarks } = await supabase
+    .from("bookmarks")
+    .select()
+    .eq("user_id", userId)
+    .in("companion_id", companionIds); // Notice the in() function used to filter the bookmarks by array
+
+  const marks = new Set(bookmarks?.map(({ companion_id }) => companion_id));
+
+  // Add a bookmarked property to each companion
+  companions.forEach((companion) => {
+    companion.bookmarked = marks.has(companion.id);
+  });
+
+  // Return the companions as before, but with the bookmarked property added
   return companions;
 };
 
@@ -75,7 +96,6 @@ export const addToSessionHistory = async (companionId: string) => {
   return data;
 };
 
-// Get the recent sessions for a specific companion id
 export const getRecentSessions = async (limit = 10) => {
   const supabase = createSupabaseClient();
 
@@ -86,8 +106,6 @@ export const getRecentSessions = async (limit = 10) => {
     .limit(limit);
 
   if (error) throw new Error(error.message);
-
-  // console.log(data);
 
   return data.map(({ companions }) => companions);
 };
@@ -116,4 +134,94 @@ export const getUserCompanions = async (userId: string) => {
   if (error) throw new Error(error.message);
 
   return data;
+};
+
+export const newCompanionPermissions = async () => {
+  const { userId, has } = await auth();
+  const supabase = createSupabaseClient();
+
+  let limit = 0;
+
+  if (has({ plan: "pro" })) {
+    return true;
+  } else if (has({ feature: "3_companion_limit" })) {
+    // if the user belongs to the free plan
+    limit = 3;
+  } else if (has({ feature: "10_companion_limit" })) {
+    // if the user belongs to the core plan
+    limit = 10;
+  }
+
+  const { data, error } = await supabase
+    .from("companions")
+    .select("id", { count: "exact" })
+    .eq("author", userId);
+
+  if (error) throw new Error(error.message);
+
+  // The companions the user has created
+  const companionCount = data?.length;
+
+  if (companionCount >= limit) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+// Bookmarks
+export const addBookmark = async (companionId: string, path: string) => {
+  const { userId } = await auth();
+  if (!userId) return;
+
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase.from("bookmarks").insert({
+    companion_id: companionId,
+    user_id: userId,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  // Revalidate the path to force a re-render of the page
+
+  revalidatePath(path);
+  return data;
+};
+
+export const removeBookmark = async (companionId: string, path: string) => {
+  const { userId } = await auth();
+  if (!userId) return;
+
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("bookmarks")
+    .delete()
+    .eq("companion_id", companionId)
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(path);
+  return data;
+};
+
+export const getBookmarkedCompanions = async (userId: string) => {
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("bookmarks")
+    .select(`companions:companion_id (*)`) // Notice the (*) to get all the companion data
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  // We don't need the bookmarks data, so we return only the companions
+  return data.map(({ companions }) => companions);
 };

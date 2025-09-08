@@ -8,10 +8,10 @@ import {
 import { getSubjectColor } from "@/lib/utils";
 
 const Page = async () => {
-  const companions = await getAllCompanions({ limit: 3 });
-  const recentSessions = await getRecentSessions(10);
-
-  // console.log({ recentSessions });
+  const [companions, recentSessions] = await Promise.all([
+    getAllCompanions({ limit: 3 }),
+    getRecentSessions(10),
+  ]);
 
   return (
     <main>
