@@ -1,61 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Converso - AI-Powered Voice Study Companions
 
-## Clerk Authentication Setup
+Converso is a modern AI-powered platform designed to help users learn various subjects through interactive, voice-based study companions. Built with Next.js 15, it leverages Vapi.ai for seamless voice interactions, Clerk for secure authentication, and Supabase for reliable data storage.
 
-This project uses [Clerk](https://clerk.com/) for authentication. To set up Clerk:
+![Converso Banner](./public/readme-featured-image.png)
 
-1. Create a Clerk account at [clerk.com](https://clerk.com)
-2. Create a new application in your Clerk Dashboard
-3. Copy your API keys from the [API keys page](https://dashboard.clerk.com/last-active?path=api-keys)
-4. Create a `.env.local` file in the root directory with the following variables:
+## 🚀 Features
 
-```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key_here
-CLERK_SECRET_KEY=your_secret_key_here
+- **Voice-Based Interaction**: Real-time voice conversations with AI study companions using Vapi.ai.
+- **Custom Companions**: Create and customize your own study companions with specific subjects, topics, and voice styles.
+- **Subject-Specific Learning**: Specialized companions for Maths, Language, Science, History, Coding, and Economics.
+- **Session History**: Track your progress with a detailed history of your study sessions.
+- **Bookmarks**: Save your favorite companions for quick access.
+- **Secure Authentication**: Robust user management and route protection via Clerk.
+- **Modern UI**: A responsive and accessible interface built with Tailwind CSS and Radix UI.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 15 (App Router)](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Authentication**: [Clerk](https://clerk.com/)
+- **Database**: [Supabase](https://supabase.com/)
+- **Voice SDK**: [Vapi.ai](https://vapi.ai/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Components**: [Radix UI](https://www.radix-ui.com/)
+- **Form Management**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Monitoring**: [Sentry](https://sentry.io/)
+
+## 📂 Project Structure
+
+```text
+converso/
+├── app/                  # Next.js App Router routes and pages
+│   ├── api/              # API routes (Sentry examples)
+│   ├── companions/       # Companion management and interaction pages
+│   ├── sign-in/          # Custom Clerk sign-in pages
+│   └── layout.tsx        # Global layout and providers
+├── components/           # Reusable UI components
+│   └── ui/               # Radix UI primitives and base components
+├── constants/            # Static constants and configuration
+├── lib/                  # Utility functions and external SDK clients
+│   ├── actions/          # Server actions for database operations
+│   └── supabase.ts       # Supabase client configuration
+├── public/               # Static assets (images, icons)
+├── types/                # TypeScript type definitions
+└── package.json          # Project dependencies and scripts
 ```
 
-**Important:** The `.env.local` file is already included in `.gitignore` and will not be committed to version control.
+## ⚙️ Getting Started
 
-### What's Included
+### Prerequisites
 
-- ✅ Clerk middleware for route protection
-- ✅ ClerkProvider wrapping the entire app
-- ✅ Sign-in and Sign-up buttons in the navbar
-- ✅ User button for authenticated users
-- ✅ Custom sign-in and sign-up pages
-- ✅ Modal-based authentication flows
+- Node.js 20+ 
+- npm / yarn / pnpm / bun
+- A [Clerk](https://clerk.com/) account
+- A [Supabase](https://supabase.com/) project
+- A [Vapi.ai](https://vapi.ai/) account
 
-## Getting Started
+### Installation
 
-First, run the development server:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/converso.git
+   cd converso
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory and add the following:
+   ```bash
+   # Clerk Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+   CLERK_SECRET_KEY=your_clerk_secret_key
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+
+   # Supabase Configuration
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+   # Vapi.ai Configuration
+   NEXT_PUBLIC_VAPI_WEB_TOKEN=your_vapi_web_token
+
+   # Sentry (Optional)
+   SENTRY_AUTH_TOKEN=your_sentry_auth_token
+   ```
+
+### Running the Project
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📜 Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev`: Starts the development server with Turbopack.
+- `npm run build`: Builds the application for production.
+- `npm run start`: Starts the production server.
+- `npm run lint`: Runs ESLint to check for code quality issues.
 
-## Learn More
+## ✅ TODOs / Future Enhancements
 
-To learn more about Next.js, take a look at the following resources:
+- [ ] Implement comprehensive unit and integration tests.
+- [ ] Add more voice styles and languages.
+- [ ] Implement user profiles and progress tracking dashboard.
+- [ ] Add support for file uploads/documents for companion context.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with ❤️ by [Your Name/Organization]
